@@ -22,3 +22,5 @@ export const Teams = {
     name: 'BAYERN_MUNICH',
   },
 };
+
+export type TeamName = $Keys<typeof Teams>;

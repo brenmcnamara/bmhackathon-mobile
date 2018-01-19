@@ -2,6 +2,7 @@
 
 import GameScreen from './GameScreen.react';
 import LoadingScreen from './LoadingScreen.react';
+import NoGameScreen from './NoGameScreen.react';
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
@@ -17,7 +18,7 @@ class App extends Component<Props> {
   render() {
     const { screen } = this.props;
     const content =
-      screen === 'LOGIN_SCREEN' ? <LoadingScreen /> : <GameScreen />;
+      screen === 'LOGIN_SCREEN' ? <LoadingScreen /> : <NoGameScreen />;
     return <SafeAreaView style={styles.safeAreaView}>{content}</SafeAreaView>;
   }
 }
