@@ -5,20 +5,41 @@ import LoadingScreen from './LoadingScreen.react';
 import NoGameScreen from './NoGameScreen.react';
 import React, { Component } from 'react';
 
+import invariant from 'invariant';
+
 import { connect } from 'react-redux';
 import { SafeAreaView, StyleSheet } from 'react-native';
 
 import type { State as ReduxState } from '../store';
 
 export type Props = {
-  screen: 'GAME_SCREEN' | 'LOGIN_SCREEN',
+  screen: 'GAME_SCREEN' | 'NO_GAME_SCREEN' | 'LOGIN_SCREEN',
 };
 
 class App extends Component<Props> {
   render() {
     const { screen } = this.props;
-    const content =
-      screen === 'LOGIN_SCREEN' ? <LoadingScreen /> : <NoGameScreen />;
+    let content;
+    switch (screen) {
+      case 'LOADING_SCREEN': {
+        content = <LoadingScreen />;
+        break;
+      }
+
+      case 'GAME_SCREEN': {
+        content = <GameScreen />;
+        break;
+      }
+
+      case 'NO_GAME_SCREEN': {
+        content = <NoGameScreen />;
+        break;
+      }
+
+      default:
+        invariant(false, 'Unrecognized screen: %s', screen);
+    }
+
     return <SafeAreaView style={styles.safeAreaView}>{content}</SafeAreaView>;
   }
 }
@@ -26,7 +47,9 @@ class App extends Component<Props> {
 function mapReduxStateToProps(state: ReduxState) {
   return {
     screen:
-      state.authState.status === 'LOGGED_IN' ? 'GAME_SCREEN' : 'LOADING_SCREEN',
+      state.authState.status !== 'LOGGED_IN'
+        ? 'LOADING_SCREEN'
+        : state.gameState.game !== null ? 'GAME_SCREEN' : 'NO_GAME_SCREEN',
   };
 }
 export default connect(mapReduxStateToProps)(App);

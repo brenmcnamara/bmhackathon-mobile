@@ -16,7 +16,7 @@ export default class NoGameScreen extends Component<Props> {
         <View style={styles.nullContent}>
           <Image resizeMode="contain" source={TVIcon} style={styles.nullIcon} />
           <Text style={styles.nullText}>
-            No Trivia at the moment. Stay tuned!
+            No trivia at the moment. Stay tuned!
           </Text>
         </View>
       </View>

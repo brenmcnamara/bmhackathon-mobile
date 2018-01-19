@@ -1,11 +1,11 @@
 /* @flow */
 
 import authState from './authState';
-import selectedGame from './selectedGame';
+import gameState from './gameState';
 
 import { combineReducers } from 'redux';
 
 export default combineReducers({
   authState,
-  selectedGame,
+  gameState,
 });
