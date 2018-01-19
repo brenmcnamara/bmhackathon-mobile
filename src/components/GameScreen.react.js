@@ -6,15 +6,21 @@ import Question from './Question.react';
 import QuestionDots from './QuestionDots.react';
 import React, { Component } from 'react';
 
+import nullthrows from 'nullthrows';
+
 import { connect } from 'react-redux';
 import { Dimensions, StyleSheet, View } from 'react-native';
 
+import type { Game } from '../models/Game';
 import type { State as ReduxState } from '../store';
 
-export type Props = {};
+export type Props = {
+  game: Game,
+};
 
 class GameScreen extends Component<Props> {
   render() {
+    const { game } = this.props;
     return (
       <View style={styles.root}>
         <Header />
@@ -25,7 +31,7 @@ class GameScreen extends Component<Props> {
           <QuestionDots />
         </View>
         <View style={styles.gameFooterContainer}>
-          <GameFooter />
+          <GameFooter game={game} />
         </View>
       </View>
     );
@@ -33,7 +39,9 @@ class GameScreen extends Component<Props> {
 }
 
 function mapReduxStateToProps(state: ReduxState) {
-  return {};
+  return {
+    game: nullthrows(state.gameState.game),
+  };
 }
 
 export default connect(mapReduxStateToProps)(GameScreen);
