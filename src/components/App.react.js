@@ -5,6 +5,7 @@ import LoadingScreen from './LoadingScreen.react';
 import React, { Component } from 'react';
 
 import { connect } from 'react-redux';
+import { SafeAreaView, StyleSheet } from 'react-native';
 
 import type { State as ReduxState } from '../store';
 
@@ -15,7 +16,9 @@ export type Props = {
 class App extends Component<Props> {
   render() {
     const { screen } = this.props;
-    return screen === 'LOGIN_SCREEN' ? <LoadingScreen /> : <GameScreen />;
+    const content =
+      screen === 'LOGIN_SCREEN' ? <LoadingScreen /> : <GameScreen />;
+    return <SafeAreaView style={styles.safeAreaView}>{content}</SafeAreaView>;
   }
 }
 
@@ -26,3 +29,10 @@ function mapReduxStateToProps(state: ReduxState) {
   };
 }
 export default connect(mapReduxStateToProps)(App);
+
+const styles = StyleSheet.create({
+  safeAreaView: {
+    backgroundColor: '#efefef',
+    flex: 1,
+  },
+});
