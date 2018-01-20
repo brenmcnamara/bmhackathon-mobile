@@ -11,25 +11,27 @@ import {
   View,
 } from 'react-native';
 
-export type Props = {};
+export type Props = {
+  question: Question | null,
+};
 
 export default class Question extends Component<Props> {
   render() {
+    const { question } = this.props;
+    if (!question) {
+      return null;
+    }
     return (
       <Animated.View style={styles.root}>
         <View style={styles.questionTimerContainer}>
-          <QuestionTimer />
+          <QuestionTimer question={question} />
         </View>
         <View style={styles.questionContainer}>
-          <Text style={styles.questionText}>
-            <Text style={styles.bold}>Robert Lewandowski</Text> is running for
-            the goal! What is going to happen?
-          </Text>
+          <Text style={styles.questionText}>{question.query}</Text>
           <View style={styles.mcOptionsContainer}>
-            <Option status="UNSELECTED" text="Goal!!" />
-            <Option status="SELECTED" text="Shoot and Miss" />
-            <Option status="UNSELECTED" text="Shoot and Blocked" />
-            <Option status="UNSELECTED" text="Ball is Stolen" />
+            {question.options.map((o, i) => (
+              <Option key={i} status="UNSELECTED" text={o} />
+            ))}
           </View>
         </View>
       </Animated.View>

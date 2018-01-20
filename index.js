@@ -28,7 +28,7 @@ Store.subscribe(() => {
 
 Firebase.firestore()
   .collection('Game')
-  .where('status.type', '==', 'IN_PROGRESS')
+  .where('status', '==', 'IN_PROGRESS')
   .onSnapshot(snapshot => {
     invariant(
       snapshot.docs.length <= 1,

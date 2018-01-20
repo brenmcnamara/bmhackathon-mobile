@@ -23,8 +23,12 @@ export function listenToQuestions(
   return Firebase.firestore()
     .collection('Question')
     .where('gameRef.refID', '==', gameID)
-    .orderBy('askAt', 'desc')
-    .onSnapshot(snapshot =>
-      snapshot.docs.filter(doc => doc.exists).map(doc => doc.data()),
-    );
+    .onSnapshot(snapshot => {
+      const questions = snapshot.docs
+        .filter(doc => doc.exists)
+        .map(doc => doc.data());
+      // TODO: Should be sorting server-side.
+      questions.sort((q1, q2) => q1.askAt.getTime() - q2.askAt.getTime());
+      callback(questions);
+    });
 }

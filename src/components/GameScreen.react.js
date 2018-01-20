@@ -2,7 +2,7 @@
 
 import GameFooter, { Height as GameFooterHeight } from './GameFooter.react';
 import Header from './Header.react';
-import Question from './Question.react';
+import QuestionComponent from './Question.react';
 import QuestionDots from './QuestionDots.react';
 import React, { Component } from 'react';
 
@@ -12,9 +12,12 @@ import { connect } from 'react-redux';
 import { Dimensions, StyleSheet, View } from 'react-native';
 
 import type { Game } from '../models/Game';
+import type { Question } from '../models/Question';
 import type { State as ReduxState } from '../store';
 
 export type Props = {
+  activeQuestion: Question | null,
+  inactiveQuestions: Array<Question>,
   game: Game,
 };
 
@@ -25,10 +28,10 @@ class GameScreen extends Component<Props> {
       <View style={styles.root}>
         <Header />
         <View style={styles.questionContainer}>
-          <Question />
+          <QuestionComponent question={this.props.activeQuestion} />
         </View>
         <View style={styles.questionDotsContainer}>
-          <QuestionDots />
+          <QuestionDots questions={this.props.inactiveQuestions} />
         </View>
         <View style={styles.gameFooterContainer}>
           <GameFooter game={game} />
@@ -39,7 +42,12 @@ class GameScreen extends Component<Props> {
 }
 
 function mapReduxStateToProps(state: ReduxState) {
+  const { activeQuestion } = state.gameState;
   return {
+    activeQuestion: activeQuestion,
+    inactiveQuestions: state.gameState.questions.filter(
+      q => q !== activeQuestion,
+    ),
     game: nullthrows(state.gameState.game),
   };
 }

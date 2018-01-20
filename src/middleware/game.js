@@ -17,14 +17,21 @@ export default (store: ReduxStore) => (next: Function) => {
   let questionSubscription: Subscription | null = null;
   let activeGame: Game | null = null;
 
+  function onChangeQuestions(next: Function, questions: Array<Question>): void {
+    next({
+      questions,
+      type: 'UPDATE_QUESTIONS',
+    });
+  }
+
   return (action: PureAction) => {
     next(action);
 
     const game = getGame(store.getState());
+
     if (equalGames(game, activeGame)) {
       return;
     }
-
     questionSubscription && questionSubscription();
 
     activeGame = game;
@@ -33,6 +40,8 @@ export default (store: ReduxStore) => (next: Function) => {
         activeGame.id,
         (questions: Array<Question>) => onChangeQuestions(next, questions),
       );
+    } else {
+      next({ questions: [], type: 'UPDATE_QUESTIONS' });
     }
   };
 };
@@ -46,8 +55,4 @@ function equalGames(g1: Game | null, g2: Game | null): bool {
     return g1 === g2;
   }
   return g1.id === g2.id;
-}
-
-function onChangeQuestions(next: Function, questions: Array<Question>): void {
-  console.log('QUESTIONS:', questions.length);
 }

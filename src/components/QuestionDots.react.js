@@ -4,7 +4,9 @@ import React, { Component } from 'react';
 
 import { StyleSheet, View } from 'react-native';
 
-export type Props = {};
+export type Props = {
+  questions: Array<Question>,
+};
 
 export const DotSize = 15;
 export const DotSpacing = 8;
@@ -17,38 +19,9 @@ export default class QuestionDots extends Component<Props> {
   render() {
     return (
       <View style={styles.root}>
-        {[
-          'CORRECT',
-          'CORRECT',
-          'CORRECT',
-          'INCORRECT',
-          'INCORRECT',
-          'INCORRECT',
-          'UNKNOWN',
-          'INCORRECT',
-          'UNKNOWN',
-          'UNKNOWN',
-          'CORRECT',
-          'CORRECT',
-          'INCORRECT',
-          'UNKNOWN',
-          'UNKNOWN',
-          'CORRECT',
-          'CORRECT',
-          'CORRECT',
-          'INCORRECT',
-          'INCORRECT',
-          'INCORRECT',
-          'UNKNOWN',
-          'INCORRECT',
-          'UNKNOWN',
-          'UNKNOWN',
-          'CORRECT',
-          'CORRECT',
-          'INCORRECT',
-          'UNKNOWN',
-          'UNKNOWN',
-        ].map((t, i) => <Dot dotType={t} key={i} />)}
+        {this.props.questions.map(question => (
+          <Dot dotType="UNKNOWN" key={question.id} />
+        ))}
       </View>
     );
   }
