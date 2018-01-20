@@ -37,7 +37,7 @@ export default function gameState(
     }
 
     case 'REMOVE_GAME': {
-      return { ...state, game: null };
+      return DEFAULT_STATE;
     }
 
     case 'UPDATE_ACTIVE_QUESTION': {
@@ -50,6 +50,7 @@ export default function gameState(
       return {
         ...state,
         activeQuestion,
+        activeSubmissionID: activeQuestion ? state.activeSubmissionID : null,
         inactiveQuestions: action.inactiveQuestions,
       };
     }
@@ -60,7 +61,11 @@ export default function gameState(
       const activeQuestion =
         state.activeQuestion &&
         action.questions.find(q => q.id === state.activeQuestion.id);
-      return { ...state, activeQuestion, questions: action.questions };
+      return {
+        ...state,
+        activeQuestion,
+        questions: action.questions,
+      };
     }
 
     case 'RESET_SUBMISSIONS': {

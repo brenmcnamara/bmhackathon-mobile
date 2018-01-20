@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   option: {
     alignItems: 'center',
     borderRadius: 1,
-    height: 40,
+    height: 44,
     justifyContent: 'center',
     marginBottom: 4,
   },

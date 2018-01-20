@@ -21,7 +21,7 @@ export type Props = {
 export const BarHeight = 4;
 export const BarSpacing = 8;
 
-const ColorLock = 'rgba(0, 0, 0, 0.2)';
+const ColorLock = 'rgba(255, 255, 255, 0.3)';
 const ColorGood = '#407305';
 const ColorCritical = '#D0021B';
 const ColorOutterLock = '#4A90E2';

@@ -28,8 +28,8 @@ const styles = StyleSheet.create({
   nullContent: {
     alignItems: 'center',
     flex: 1,
-    justifyContent: 'center',
-    marginHorizontal: 16,
+    marginHorizontal: 40,
+    marginTop: 120,
   },
 
   nullText: {

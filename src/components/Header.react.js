@@ -1,19 +1,20 @@
 /* @flow */
 
-import ChevronDownIcon from '../../assets/ChevronDown-23x9.png';
 import React, { Component } from 'react';
 import TempProfilePicIcon from '../../assets/TempProfilePic-36x36.png';
+import TrophyIcon from '../../assets/Trophy-29x29.png';
 
 import { connect } from 'react-redux';
 import { formatPoints } from '../utils/formatter';
 import { getTotalPoints } from '../utils/state-utils';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { updateLeaderBoard } from '../actions/leaderBoard';
 
 export type Props = {
   totalPoints: number,
 };
 
-const ChevronWidth = 23;
+const LeftIconWidth = 29;
 const ProfilePicSize = 36;
 
 class Header extends Component<Props> {
@@ -22,10 +23,17 @@ class Header extends Component<Props> {
     const pointsFormatted = formatPoints(totalPoints);
     return (
       <View style={styles.root}>
-        <TouchableOpacity>
-          <Image resizeMode="contain" source={ChevronDownIcon} />
-        </TouchableOpacity>
-        <Text style={styles.totalScoreText}>{`${pointsFormatted} points`}</Text>
+        {this.props.hasGame && (
+          <TouchableOpacity onPress={this._onPressLeft}>
+            <Image resizeMode="contain" source={TrophyIcon} />
+          </TouchableOpacity>
+        )}
+        {this.props.hasGame && (
+          <Text style={styles.totalScoreText}>{`${
+            pointsFormatted
+          } points`}</Text>
+        )}
+        {!this.props.hasGame && <View style={{ flex: 1 }} />}
         <TouchableOpacity>
           <Image
             resizeMode="contain"
@@ -36,10 +44,15 @@ class Header extends Component<Props> {
       </View>
     );
   }
+
+  _onPressLeft = (): void => {
+    this.props.dispatch(updateLeaderBoard(true));
+  };
 }
 
 function mapReduxStateToProps(state: ReduxState): Props {
   return {
+    hasGame: Boolean(state.gameState.game),
     totalPoints: getTotalPoints(state),
   };
 }
@@ -50,7 +63,7 @@ const styles = StyleSheet.create({
   leftButton: {
     // NOTE: Assuming the width of the chevron is smaller than the width of
     // the profile pic here.
-    paddingRight: ProfilePicSize - ChevronWidth,
+    paddingRight: ProfilePicSize - LeftIconWidth,
   },
 
   profilePic: {
