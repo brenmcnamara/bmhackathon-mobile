@@ -4,21 +4,28 @@ import ChevronDownIcon from '../../assets/ChevronDown-23x9.png';
 import React, { Component } from 'react';
 import TempProfilePicIcon from '../../assets/TempProfilePic-36x36.png';
 
+import { connect } from 'react-redux';
+import { formatPoints } from '../utils/formatter';
+import { getTotalPoints } from '../utils/state-utils';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export type Props = {};
+export type Props = {
+  totalPoints: number,
+};
 
 const ChevronWidth = 23;
 const ProfilePicSize = 36;
 
-export default class Header extends Component<Props> {
+class Header extends Component<Props> {
   render() {
+    const { totalPoints } = this.props;
+    const pointsFormatted = formatPoints(totalPoints);
     return (
       <View style={styles.root}>
         <TouchableOpacity>
           <Image resizeMode="contain" source={ChevronDownIcon} />
         </TouchableOpacity>
-        <Text style={styles.totalScoreText}>10,124 points</Text>
+        <Text style={styles.totalScoreText}>{`${pointsFormatted} points`}</Text>
         <TouchableOpacity>
           <Image
             resizeMode="contain"
@@ -30,6 +37,14 @@ export default class Header extends Component<Props> {
     );
   }
 }
+
+function mapReduxStateToProps(state: ReduxState): Props {
+  return {
+    totalPoints: getTotalPoints(state),
+  };
+}
+
+export default connect(mapReduxStateToProps)(Header);
 
 const styles = StyleSheet.create({
   leftButton: {

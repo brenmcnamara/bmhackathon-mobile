@@ -2,8 +2,6 @@
 
 import React, { Component } from 'react';
 
-import invariant from 'invariant';
-
 import {
   Animated,
   Easing,
@@ -12,6 +10,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { formatPoints } from '../utils/formatter';
 
 export type Props = {
   pointValue: number,
@@ -78,9 +77,10 @@ export default class QuestionTimer extends Component<Props> {
         : BarWidth,
     };
 
+    const formattedPoints = formatPoints(this.props.pointValue);
     return (
       <View style={styles.root}>
-        <Text style={styles.points}>{this.props.pointValue}</Text>
+        <Text style={styles.points}>{formattedPoints}</Text>
         <View style={styles.bar}>
           <View style={outterFillStyles}>
             <Animated.View style={fillStyles} />
