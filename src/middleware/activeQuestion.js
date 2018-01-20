@@ -43,21 +43,17 @@ function watchQuestions(
   function watch() {
     const payload = getActiveQuestionPayload(questions);
     if (!payload) {
-      if (activeQuestion) {
-        next({
-          activeQuestion: null,
-          inactiveQuestions: getInactiveQuestions(questions),
-          type: 'UPDATE_ACTIVE_QUESTION',
-        });
-      }
+      next({
+        activeQuestion: null,
+        inactiveQuestions: getInactiveQuestions(questions),
+        type: 'UPDATE_ACTIVE_QUESTION',
+      });
+      activeQuestion = null;
       return;
     }
 
     const { next: nextQuestion } = payload;
-    if (
-      payload.timeUntilActive === 'ALREADY_RUNNING' &&
-      nextQuestion !== activeQuestion
-    ) {
+    if (payload.timeUntilActive === 'ALREADY_RUNNING') {
       activeQuestion = nextQuestion;
       next({
         activeQuestion: payload.next,
