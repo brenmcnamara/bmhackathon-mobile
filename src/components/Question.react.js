@@ -80,7 +80,6 @@ export default class Question extends Component<Props, State> {
         });
       });
     } else if (!nextProps.question && this.props.question) {
-      // TODO: Implement me!
       this.setState({
         type: 'TRANSITION_OUT',
         question: this.props.question,
