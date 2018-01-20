@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 
 export type Props = {
+  pointValue: number,
   question: Question,
 };
 
@@ -12,7 +13,6 @@ export const BarHeight = 4;
 export const BarSpacing = 8;
 
 const ColorGood = '#407305';
-const ColorWarn = '#DF9924';
 const ColorCritical = '#D0021B';
 
 const { width: ScreenWidth } = Dimensions.get('window');
@@ -28,16 +28,17 @@ export default class QuestionTimer extends Component<Props> {
     const nowMillis = Date.now();
     const startMillis = question.askAt.getTime();
     const endMillis = startMillis + question.timeLimit * 1000;
-    this._fillerWidth = new Animated.Value(
-      (endMillis - nowMillis) / (endMillis - startMillis) * BarWidth,
-    );
+    const ratio = (endMillis - nowMillis) / (endMillis - startMillis);
+    this._fillerWidth = new Animated.Value(ratio * BarWidth);
   }
 
   componentDidMount(): void {
     const { question } = this.props;
     const startMillis = question.askAt.getTime();
     const nowMillis = Date.now();
-    const endMillis = startMillis + question.timeLimit * 1000;
+    const timeLimitMillis = question.timeLimit * 1000;
+    const endMillis = startMillis + timeLimitMillis;
+
     Animated.timing(this._fillerWidth, {
       duration: endMillis - nowMillis,
       toValue: 0,
@@ -46,12 +47,15 @@ export default class QuestionTimer extends Component<Props> {
 
   render() {
     const fillStyles = {
-      backgroundColor: ColorGood,
+      backgroundColor: this._fillerWidth.interpolate({
+        inputRange: [0, BarWidth],
+        outputRange: [ColorCritical, ColorGood],
+      }),
       width: this._fillerWidth,
     };
     return (
       <View style={styles.root}>
-        <Text style={styles.points}>2,345</Text>
+        <Text style={styles.points}>{this.props.pointValue}</Text>
         <View style={styles.bar}>
           <Animated.View style={fillStyles} />
         </View>

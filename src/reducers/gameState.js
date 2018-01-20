@@ -3,21 +3,27 @@
 import invariant from 'invariant';
 
 import type { Game } from '../models/Game';
+import type { ID } from '../models/types';
 import type { PureAction } from '../store';
 import type { Question } from '../models/Question';
+import type { Submission } from '../models/Submission';
 
 export type State = {
   +activeQuestion: Question | null,
+  +activeSubmissionID: ID | null,
   +game: Game | null,
   +inactiveQuestions: Array<Question>,
   +questions: Array<Question>,
+  +submissions: { [id: ID]: Submission },
 };
 
 const DEFAULT_STATE = {
   activeQuestion: null,
+  activeSubmissionID: null,
   game: null,
   inactiveQuestions: [],
   questions: [],
+  submissions: [],
 };
 
 export default function gameState(
@@ -54,6 +60,16 @@ export default function gameState(
         state.activeQuestion &&
         action.questions.find(q => q.id === state.activeQuestion.id);
       return { ...state, activeQuestion, questions: action.questions };
+    }
+
+    case 'RESET_SUBMISSIONS': {
+      return { ...state, submissions: action.submissions };
+    }
+
+    case 'UPSERT_SUBMISSION': {
+      const { submission } = action;
+      const submissions = { ...state.submissions, [submission.id]: submission };
+      return { ...state, submissions };
     }
   }
   return state;

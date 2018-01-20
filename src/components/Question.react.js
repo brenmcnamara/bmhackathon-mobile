@@ -3,6 +3,8 @@
 import QuestionTimer from './QuestionTimer.react';
 import React, { Component } from 'react';
 
+import nullthrows from 'nullthrows';
+
 import {
   Animated,
   StyleSheet,
@@ -15,16 +17,47 @@ export type Props = {
   question: Question | null,
 };
 
-export default class Question extends Component<Props> {
+type State = {
+  pointValue: number | null,
+};
+
+export default class Question extends Component<Props, State> {
+  _shouldUpdatePointValue: bool = false;
+
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      pointValue: props.question ? calculatePointValue(props.question) : null,
+    };
+  }
+
+  componentDidMount(): void {
+    this._shouldUpdatePointValue = Boolean(this.props.question);
+    this._maybeRunPointValueUpdateLoop();
+  }
+
+  componentWillReceiveProps(nextProps: Props): void {
+    this._shouldUpdatePointValue = Boolean(nextProps.question);
+    this._maybeRunPointValueUpdateLoop();
+  }
+
+  componentWillUnmount(): void {
+    this._shouldUpdatePointValue = false;
+  }
+
   render() {
     const { question } = this.props;
+
     if (!question) {
       return null;
     }
+    const { pointValue } = this.state;
+
     return (
       <Animated.View style={styles.root}>
         <View style={styles.questionTimerContainer}>
-          <QuestionTimer question={question} />
+          <QuestionTimer pointValue={pointValue} question={question} />
         </View>
         <View style={styles.questionContainer}>
           <Text style={styles.questionText}>{question.query}</Text>
@@ -37,6 +70,21 @@ export default class Question extends Component<Props> {
       </Animated.View>
     );
   }
+
+  _maybeRunPointValueUpdateLoop = (): void => {
+    if (!this._shouldUpdatePointValue) {
+      return;
+    }
+    requestAnimationFrame(() => {
+      const { question } = this.props;
+      if (question) {
+        this.setState({
+          pointValue: calculatePointValue(question),
+        });
+      }
+      this._maybeRunPointValueUpdateLoop();
+    });
+  };
 }
 
 type OptionProps = {
@@ -71,6 +119,14 @@ class Option extends Component<OptionProps> {
       </TouchableOpacity>
     );
   }
+}
+
+function calculatePointValue(question: Question): number {
+  const startMillis = question.askAt.getTime();
+  const endMillis = startMillis + question.timeLimit * 1000;
+  const nowMillis = Date.now();
+  const ratio = (endMillis - nowMillis) / (endMillis - startMillis);
+  return Math.max(0, Math.floor(ratio * question.maxPointValue));
 }
 
 const styles = StyleSheet.create({
