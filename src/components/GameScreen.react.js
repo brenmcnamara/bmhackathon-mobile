@@ -29,7 +29,6 @@ export type Props = {
 
 class GameScreen extends Component<Props> {
   render() {
-    console.log('ACTIVE SUBMISSION', this.props.activeSubmission);
     const { game } = this.props;
     return (
       <View style={styles.root}>
@@ -55,8 +54,8 @@ class GameScreen extends Component<Props> {
     const submission =
       this.props.activeSubmission ||
       createSubmission(
-        this.props.game,
         this.props.user,
+        this.props.game,
         nullthrows(this.props.activeQuestion),
       );
     this.props.dispatch(

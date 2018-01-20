@@ -23,6 +23,7 @@ const DEFAULT_STATE = {
   game: null,
   inactiveQuestions: [],
   questions: [],
+  questionCorrect: {},
   submissions: {},
 };
 
