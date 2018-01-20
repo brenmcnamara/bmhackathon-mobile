@@ -35,6 +35,14 @@ export default (store: ReduxStore) => (next: Function) => {
   return (action: PureAction) => {
     next(action);
 
+    switch (action.type) {
+      case 'UPSERT_SUBMISSION': {
+        // Upload the submission to Firebase.
+        genUpsertSubmission(action.submission);
+        break;
+      }
+    }
+
     const game = getGame(store.getState());
     const user = getUser(store.getState());
 
@@ -57,14 +65,6 @@ export default (store: ReduxStore) => (next: Function) => {
       );
     } else {
       next({ questions: [], type: 'UPDATE_QUESTIONS' });
-    }
-
-    switch (action.type) {
-      case 'UPSERT_SUBMISSION': {
-        // Upload the submission to Firebase.
-        genUpsertSubmission(action.submission);
-        break;
-      }
     }
   };
 };

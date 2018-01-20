@@ -23,7 +23,7 @@ const DEFAULT_STATE = {
   game: null,
   inactiveQuestions: [],
   questions: [],
-  submissions: [],
+  submissions: {},
 };
 
 export default function gameState(
@@ -63,14 +63,38 @@ export default function gameState(
     }
 
     case 'RESET_SUBMISSIONS': {
-      return { ...state, submissions: action.submissions };
+      const midState = { ...state, submissions: action.submissions };
+      return {
+        ...midState,
+        activeSubmissionID: calculateActiveSubmissionID(midState),
+      };
     }
 
     case 'UPSERT_SUBMISSION': {
       const { submission } = action;
       const submissions = { ...state.submissions, [submission.id]: submission };
-      return { ...state, submissions };
+      const midState = { ...state, submissions };
+      return {
+        ...midState,
+        activeSubmissionID: calculateActiveSubmissionID(midState),
+      };
     }
   }
   return state;
+}
+
+function calculateActiveSubmissionID(state: State): Submission | null {
+  const { activeQuestion } = state;
+  if (!activeQuestion) {
+    return null;
+  }
+  for (let id in state.submissions) {
+    if (state.submissions.hasOwnProperty(id)) {
+      const submission = state.submissions[id];
+      if (submission.questionRef.refID === activeQuestion.id) {
+        return submission.id;
+      }
+    }
+  }
+  return null;
 }

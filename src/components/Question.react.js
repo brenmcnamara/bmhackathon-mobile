@@ -3,8 +3,6 @@
 import QuestionTimer from './QuestionTimer.react';
 import React, { Component } from 'react';
 
-import nullthrows from 'nullthrows';
-
 import {
   Animated,
   StyleSheet,
@@ -14,7 +12,9 @@ import {
 } from 'react-native';
 
 export type Props = {
+  onSelectOption: (index: number, pointValue: number) => any,
   question: Question | null,
+  submission: Submission | null,
 };
 
 type State = {
@@ -47,7 +47,7 @@ export default class Question extends Component<Props, State> {
   }
 
   render() {
-    const { question } = this.props;
+    const { question, submission } = this.props;
 
     if (!question) {
       return null;
@@ -63,7 +63,18 @@ export default class Question extends Component<Props, State> {
           <Text style={styles.questionText}>{question.query}</Text>
           <View style={styles.mcOptionsContainer}>
             {question.options.map((o, i) => (
-              <Option key={i} status="UNSELECTED" text={o} />
+              <Option
+                key={i}
+                onPress={() =>
+                  this.props.onSelectOption(i, this.state.pointValue)
+                }
+                status={
+                  submission && submission.predictionIndex === i
+                    ? 'SELECTED'
+                    : 'UNSELECTED'
+                }
+                text={o}
+              />
             ))}
           </View>
         </View>
@@ -88,6 +99,7 @@ export default class Question extends Component<Props, State> {
 }
 
 type OptionProps = {
+  onPress: () => any,
   status: 'UNSELECTED' | 'SELECTED',
   text: string,
 };
@@ -112,7 +124,7 @@ class Option extends Component<OptionProps> {
       styles.optionsText,
     ];
     return (
-      <TouchableOpacity>
+      <TouchableOpacity onPress={this.props.onPress}>
         <View style={optionStyles}>
           <Text style={textStyles}>{text}</Text>
         </View>
