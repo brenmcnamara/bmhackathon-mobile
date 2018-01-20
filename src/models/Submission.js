@@ -1,11 +1,12 @@
 /* @flow */
 
-import type { Answer } from './Question';
-import type { ModelStub, Pointer } from './types';
+import type { ModelStub, Seconds } from './types';
 
-export type Submission = ModelStub<'Submission'> & {
-  +answer: Answer,
-  +gameRef: Pointer<'Game'>,
-  +questionRef: Pointer<'Question'>,
-  +userRef: Pointer<'User'>,
+export type Question = ModelStub<'Question'> & {
+  +askAt: Date,
+  +correctIndex: number | 'UNKNOWN',
+  +isCanceled: bool,
+  +options: Array<string>,
+  +query: string,
+  +timeLimit: Seconds,
 };
