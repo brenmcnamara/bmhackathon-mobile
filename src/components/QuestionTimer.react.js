@@ -2,9 +2,11 @@
 
 import React, { Component } from 'react';
 
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
 
-export type Props = {};
+export type Props = {
+  question: Question,
+};
 
 export const BarHeight = 4;
 export const BarSpacing = 8;
@@ -19,16 +21,39 @@ const { width: ScreenWidth } = Dimensions.get('window');
 const BarWidth = ScreenWidth - BarSpacing * 2;
 
 export default class QuestionTimer extends Component<Props> {
+  _fillerWidth: Animated.Value;
+
+  componentWillMount(): void {
+    const { question } = this.props;
+    const nowMillis = Date.now();
+    const startMillis = question.askAt.getTime();
+    const endMillis = startMillis + question.timeLimit * 1000;
+    this._fillerWidth = new Animated.Value(
+      (endMillis - nowMillis) / (endMillis - startMillis) * BarWidth,
+    );
+  }
+
+  componentDidMount(): void {
+    const { question } = this.props;
+    const startMillis = question.askAt.getTime();
+    const nowMillis = Date.now();
+    const endMillis = startMillis + question.timeLimit * 1000;
+    Animated.timing(this._fillerWidth, {
+      duration: endMillis - nowMillis,
+      toValue: 0,
+    }).start();
+  }
+
   render() {
     const fillStyles = {
       backgroundColor: ColorGood,
-      width: BarWidth * 0.3,
+      width: this._fillerWidth,
     };
     return (
       <View style={styles.root}>
         <Text style={styles.points}>2,345</Text>
         <View style={styles.bar}>
-          <View style={fillStyles} />
+          <Animated.View style={fillStyles} />
         </View>
       </View>
     );

@@ -6,6 +6,7 @@ export type Action = Action$UpdateActiveQuestion;
 
 type Action$UpdateActiveQuestion = {|
   +activeQuestion: Question | null,
+  +inactiveQuestions: Array<Question>,
   +type: 'UPDATE_ACTIVE_QUESTION',
 |};
 
@@ -45,6 +46,7 @@ function watchQuestions(
       if (activeQuestion) {
         next({
           activeQuestion: null,
+          inactiveQuestions: getInactiveQuestions(questions),
           type: 'UPDATE_ACTIVE_QUESTION',
         });
       }
@@ -59,15 +61,15 @@ function watchQuestions(
       activeQuestion = nextQuestion;
       next({
         activeQuestion: payload.next,
+        inactiveQuestions: getInactiveQuestions(questions),
         type: 'UPDATE_ACTIVE_QUESTION',
       });
-    } else {
-      const timeoutMillis =
-        payload.timeUntilActive === 'ALREADY_RUNNING'
-          ? payload.timeUntilInactive
-          : payload.timeUntilActive;
-      timer = setTimeout(watch, timeoutMillis);
     }
+    const timeoutMillis =
+      payload.timeUntilActive === 'ALREADY_RUNNING'
+        ? payload.timeUntilInactive
+        : payload.timeUntilActive;
+    timer = setTimeout(watch, timeoutMillis);
   }
 
   watch();
@@ -106,4 +108,16 @@ function getActiveQuestionPayload(
     }
   }
   return null;
+}
+
+function getInactiveQuestions(questions: Array<Question>): Array<Question> {
+  const nowMillis = Date.now();
+  return questions.filter(question => {
+    if (question.isCanceled) {
+      return true;
+    }
+    const startMillis = question.askAt.getTime();
+    const endMillis = startMillis + question.timeLimit * 1000;
+    return nowMillis >= endMillis;
+  });
 }

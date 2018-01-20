@@ -45,9 +45,7 @@ function mapReduxStateToProps(state: ReduxState) {
   const { activeQuestion } = state.gameState;
   return {
     activeQuestion: activeQuestion,
-    inactiveQuestions: state.gameState.questions.filter(
-      q => q !== activeQuestion,
-    ),
+    inactiveQuestions: state.gameState.inactiveQuestions,
     game: nullthrows(state.gameState.game),
   };
 }

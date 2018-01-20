@@ -9,12 +9,14 @@ import type { Question } from '../models/Question';
 export type State = {
   +activeQuestion: Question | null,
   +game: Game | null,
+  +inactiveQuestions: Array<Question>,
   +questions: Array<Question>,
 };
 
 const DEFAULT_STATE = {
   activeQuestion: null,
   game: null,
+  inactiveQuestions: [],
   questions: [],
 };
 
@@ -38,7 +40,11 @@ export default function gameState(
         'Trying to set active question to question that does not exist: %s',
         activeQuestion && activeQuestion.id,
       );
-      return { ...state, activeQuestion };
+      return {
+        ...state,
+        activeQuestion,
+        inactiveQuestions: action.inactiveQuestions,
+      };
     }
 
     case 'UPDATE_QUESTIONS': {
