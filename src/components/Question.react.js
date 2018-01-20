@@ -3,6 +3,8 @@
 import QuestionTimer from './QuestionTimer.react';
 import React, { Component } from 'react';
 
+import invariant from 'invariant';
+
 import {
   Animated,
   Easing,
@@ -20,6 +22,10 @@ export type Props = {
 
 type State = {
   pointValue: number | null,
+  transitionStage: | { type: 'EMPTY' }
+    | { type: 'IN', question: Question }
+    | { type: 'TRANSITION_IN', question: Question }
+    | { type: 'TRANSITION_OUT', question: Question },
 };
 
 const TRANSITION_OFFSET = 30;
@@ -33,12 +39,15 @@ export default class Question extends Component<Props, State> {
 
     this.state = {
       pointValue: props.question ? calculatePointValue(props.question) : null,
+      transitionStage: props.question
+        ? { type: 'IN', question: props.question }
+        : { type: 'EMPTY' },
     };
+
+    this._fadeValue = new Animated.Value(props.question ? 1.0 : 0.0);
   }
 
-  componentWillMount(): void {
-    this._fadeValue = new Animated.Value(this.props.question ? 1.0 : 0.0);
-  }
+  componentWillMount(): void {}
 
   componentDidMount(): void {
     this._shouldUpdatePointValue = Boolean(
@@ -52,14 +61,41 @@ export default class Question extends Component<Props, State> {
       nextProps.question && !nextProps.submission,
     );
     if (nextProps.question && !this.props.question) {
+      this.setState({
+        transitionStage: {
+          type: 'TRANSITION_IN',
+          question: nextProps.question,
+        },
+      });
       Animated.timing(this._fadeValue, {
         duration: 400,
         easing: Easing.out(Easing.cubic),
         toValue: 1.0,
-      }).start();
+      }).start(() => {
+        this.setState({
+          transitionStage: {
+            question: nextProps.question,
+            type: 'IN',
+          },
+        });
+      });
     } else if (!nextProps.question && this.props.question) {
       // TODO: Implement me!
-      this._fadeValue.setValue(0.0);
+      this.setState({
+        type: 'TRANSITION_OUT',
+        question: this.props.question,
+      });
+      Animated.timing(this._fadeValue, {
+        duration: 400,
+        easing: Easing.out(Easing.cubic),
+        toValue: 0.0,
+      }).start(() => {
+        this.setState({
+          transitionStage: {
+            type: 'EMPTY',
+          },
+        });
+      });
     }
     this._maybeRunPointValueUpdateLoop();
   }
@@ -90,10 +126,12 @@ export default class Question extends Component<Props, State> {
   }
 
   _renderContent() {
-    const { question, submission } = this.props;
-    if (!question) {
+    const { submission } = this.props;
+    const { transitionStage } = this.state;
+    if (transitionStage.type === 'EMPTY') {
       return null;
     }
+    const question = this._forceGetQuestion();
     const { pointValue } = this.state;
     return [
       <View key="FIRST" style={styles.questionTimerContainer}>
@@ -147,6 +185,21 @@ export default class Question extends Component<Props, State> {
       this.props.onSelectOption(index, this.state.pointValue);
     }
   };
+
+  _forceGetQuestion(): Question {
+    const { transitionStage } = this.state;
+    switch (transitionStage.type) {
+      case 'IN':
+        return transitionStage.question;
+      case 'TRANSITION_IN':
+        return transitionStage.question;
+      case 'TRANSITION_OUT':
+        return transitionStage.question;
+      case 'EMPTY':
+      default:
+        invariant(false, 'Question does not exist!');
+    }
+  }
 }
 
 type OptionProps = {
