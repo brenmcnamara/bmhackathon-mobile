@@ -7,7 +7,7 @@ export type Action = Action$UpdateActiveQuestion;
 type Action$UpdateActiveQuestion = {|
   +activeQuestion: Question | null,
   +inactiveQuestions: Array<Question>,
-  +type: 'UPDATE_ACTIVE_QUESTION',
+  +type: 'UPDATE_ACTIVE_AND_INACTIVE_QUESTION',
 |};
 
 type Subscription = Function;
@@ -40,29 +40,17 @@ function watchQuestions(
   let timer = null;
 
   function watch() {
-    const payload = getActiveQuestionPayload(questions);
-    if (!payload) {
-      next({
-        activeQuestion: null,
-        inactiveQuestions: getInactiveQuestions(questions),
-        type: 'UPDATE_ACTIVE_QUESTION',
-      });
-      return;
+    const activeQuestion = getActiveQuestion(questions);
+    const inactiveQuestions = getInactiveQuestions(questions);
+    next({
+      activeQuestion,
+      inactiveQuestions,
+      type: 'UPDATE_ACTIVE_AND_INACTIVE_QUESTION',
+    });
+    const nextUpdateMillis = getNextUpdateMillis(questions);
+    if (nextUpdateMillis !== null) {
+      timer = setTimeout(watch, nextUpdateMillis);
     }
-
-    const { next: nextQuestion } = payload;
-    if (payload.timeUntilActive === 'ALREADY_RUNNING') {
-      next({
-        activeQuestion: nextQuestion,
-        inactiveQuestions: getInactiveQuestions(questions),
-        type: 'UPDATE_ACTIVE_QUESTION',
-      });
-    }
-    const timeoutMillis =
-      payload.timeUntilActive === 'ALREADY_RUNNING'
-        ? payload.timeUntilInactive
-        : payload.timeUntilActive;
-    timer = setTimeout(watch, timeoutMillis);
   }
 
   watch();
@@ -72,35 +60,36 @@ function watchQuestions(
   };
 }
 
-function getActiveQuestionPayload(
-  questions: Array<Question>,
-): {
-  next: Question,
-  timeUntilActive: number | 'ALREADY_RUNNING',
-  timeUntilInactive: number,
-} | null {
+function getActiveQuestion(questions: Array<Question>): Question | null {
+  const nowMillis = Date.now();
   for (let question of questions) {
-    if (question.isCanceled) {
-      continue;
-    }
     const startMillis = question.askAt.getTime();
-    const endMillis = question.askAt.getTime() + question.timeLimit * 1000;
-    const nowMillis = Date.now();
-    if (nowMillis < startMillis) {
-      return {
-        next: question,
-        timeUntilActive: startMillis - nowMillis,
-        timeUntilInactive: endMillis - nowMillis,
-      };
-    } else if (nowMillis < endMillis) {
-      return {
-        next: question,
-        timeUntilActive: 'ALREADY_RUNNING',
-        timeUntilInactive: endMillis - nowMillis,
-      };
+    const endMillis = startMillis + question.timeLimit * 1000;
+    if (startMillis <= nowMillis && endMillis > nowMillis) {
+      return question;
     }
   }
   return null;
+}
+
+function getNextUpdateMillis(questions: Array<Question>): number | null {
+  // We need to update either when a new question is becoming active or a
+  // currently active question is becoming inactive.
+  // We are assuming there is only 1 active question at a time.
+  let soonestUpdate = Infinity;
+  const nowMillis = Date.now();
+  for (let question of questions) {
+    const startMillis = question.askAt.getTime();
+    const endMillis = startMillis + question.timeLimit * 1000;
+    const deltaToStart = startMillis - nowMillis;
+    const deltaToEnd = endMillis - nowMillis;
+    if (deltaToStart > 0 && deltaToStart < soonestUpdate) {
+      soonestUpdate = deltaToStart;
+    } else if (deltaToEnd > 0 && deltaToEnd < soonestUpdate) {
+      soonestUpdate = deltaToEnd;
+    }
+  }
+  return soonestUpdate === Infinity ? null : soonestUpdate;
 }
 
 function getInactiveQuestions(questions: Array<Question>): Array<Question> {

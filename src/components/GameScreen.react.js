@@ -11,7 +11,7 @@ import uuid from 'uuid/v4';
 
 import { connect } from 'react-redux';
 import { Dimensions, StyleSheet, View } from 'react-native';
-import { upsertSubmission } from '../actions/game';
+import { upsertActiveSubmission } from '../actions/game';
 
 import type { Game } from '../models/Game';
 import type { ID } from '../models/types';
@@ -64,7 +64,11 @@ class GameScreen extends Component<Props> {
         nullthrows(this.props.activeQuestion),
       );
     this.props.dispatch(
-      upsertSubmission({ ...submission, pointValue, predictionIndex: index }),
+      upsertActiveSubmission({
+        ...submission,
+        pointValue,
+        predictionIndex: index,
+      }),
     );
   };
 }

@@ -5,7 +5,7 @@ import type { Game } from '../models/Game';
 export type Action =
   | Action$SelectGame
   | Action$RemoveGame
-  | Action$UpsertSubmission;
+  | Action$UpsertActiveSubmission;
 
 type Action$SelectGame = {|
   +game: Game,
@@ -24,14 +24,14 @@ export function removeGame() {
   return { type: 'REMOVE_GAME' };
 }
 
-type Action$UpsertSubmission = {|
+type Action$UpsertActiveSubmission = {|
   +submission: Submission,
-  +type: 'UPSERT_SUBMISSION',
+  +type: 'UPSERT_ACTIVE_SUBMISSION',
 |};
 
-export function upsertSubmission(submission: Submission) {
+export function upsertActiveSubmission(submission: Submission) {
   return {
     submission,
-    type: 'UPSERT_SUBMISSION',
+    type: 'UPSERT_ACTIVE_SUBMISSION',
   };
 }

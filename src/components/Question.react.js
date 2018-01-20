@@ -131,13 +131,12 @@ export default class Question extends Component<Props, State> {
       return null;
     }
     const question = this._forceGetQuestion();
-    const { pointValue } = this.state;
     return [
       <View key="FIRST" style={styles.questionTimerContainer}>
         <QuestionTimer
-          pointValue={pointValue}
+          pointValue={this.state.pointValue}
           question={question}
-          shouldLock={Boolean(submission)}
+          submission={submission}
         />
       </View>,
       <View key="SECOND" style={styles.questionContainer}>
@@ -181,7 +180,7 @@ export default class Question extends Component<Props, State> {
       this._shouldUpdatePointValue = false;
       const pointValue = calculatePointValue(question);
       this.setState({ pointValue });
-      this.props.onSelectOption(index, this.state.pointValue);
+      this.props.onSelectOption(index, pointValue);
     }
   };
 

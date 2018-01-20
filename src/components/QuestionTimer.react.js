@@ -15,7 +15,7 @@ import { formatPoints } from '../utils/formatter';
 export type Props = {
   pointValue: number,
   question: Question,
-  shouldLock: bool,
+  submission: Submission | null,
 };
 
 export const BarHeight = 4;
@@ -58,8 +58,10 @@ export default class QuestionTimer extends Component<Props> {
   }
 
   render() {
+    const { submission } = this.props;
+    const shouldLock = Boolean(submission);
     const fillStyles = {
-      backgroundColor: this.props.shouldLock
+      backgroundColor: shouldLock
         ? ColorLock
         : this._fillerWidth.interpolate({
             inputRange: [0, BarWidth],
@@ -69,12 +71,10 @@ export default class QuestionTimer extends Component<Props> {
     };
 
     const outterFillStyles = {
-      backgroundColor: this.props.shouldLock ? ColorOutterLock : '#B9B7B7',
+      backgroundColor: shouldLock ? ColorOutterLock : '#B9B7B7',
       flexDirection: 'row',
       height: BarHeight,
-      width: this.props.shouldLock
-        ? this._calculateRatio(this.props) * BarWidth
-        : BarWidth,
+      width: this._calculateRatio(this.props) * BarWidth,
     };
 
     const formattedPoints = formatPoints(this.props.pointValue);
@@ -91,10 +91,12 @@ export default class QuestionTimer extends Component<Props> {
   }
 
   _calculateRatio(props: Props): number {
-    const startMillis = props.question.askAt.getTime();
-    const endMillis = startMillis + props.question.timeLimit * 1000;
-    const nowMillis = Date.now();
-    return (endMillis - nowMillis) / (endMillis - startMillis);
+    const { question, submission } = this.props;
+    if (submission) {
+      // Get the ratio.
+      return submission.pointValue / question.maxPointValue;
+    }
+    return 1.0;
   }
 }
 

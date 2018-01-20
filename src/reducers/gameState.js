@@ -23,7 +23,6 @@ const DEFAULT_STATE = {
   game: null,
   inactiveQuestions: [],
   questions: [],
-  questionCorrect: {},
   submissions: {},
 };
 
@@ -40,7 +39,7 @@ export default function gameState(
       return DEFAULT_STATE;
     }
 
-    case 'UPDATE_ACTIVE_QUESTION': {
+    case 'UPDATE_ACTIVE_AND_INACTIVE_QUESTION': {
       const { activeQuestion } = action;
       invariant(
         !activeQuestion || state.questions.includes(activeQuestion),
@@ -76,13 +75,13 @@ export default function gameState(
       };
     }
 
-    case 'UPSERT_SUBMISSION': {
+    case 'UPSERT_ACTIVE_SUBMISSION': {
       const { submission } = action;
       const submissions = { ...state.submissions, [submission.id]: submission };
-      const midState = { ...state, submissions };
       return {
-        ...midState,
-        activeSubmissionID: calculateActiveSubmissionID(midState),
+        ...state,
+        activeSubmissionID: submission.id,
+        submissions,
       };
     }
   }
