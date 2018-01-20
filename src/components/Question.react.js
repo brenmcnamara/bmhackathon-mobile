@@ -5,6 +5,7 @@ import React, { Component } from 'react';
 
 import {
   Animated,
+  Easing,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -21,7 +22,10 @@ type State = {
   pointValue: number | null,
 };
 
+const TRANSITION_OFFSET = 30;
+
 export default class Question extends Component<Props, State> {
+  _fadeValue: Animated.Value;
   _shouldUpdatePointValue: bool = false;
 
   constructor(props: Props) {
@@ -30,6 +34,10 @@ export default class Question extends Component<Props, State> {
     this.state = {
       pointValue: props.question ? calculatePointValue(props.question) : null,
     };
+  }
+
+  componentWillMount(): void {
+    this._fadeValue = new Animated.Value(this.props.question ? 1.0 : 0.0);
   }
 
   componentDidMount(): void {
@@ -43,6 +51,16 @@ export default class Question extends Component<Props, State> {
     this._shouldUpdatePointValue = Boolean(
       nextProps.question && !nextProps.submission,
     );
+    if (nextProps.question && !this.props.question) {
+      Animated.timing(this._fadeValue, {
+        duration: 400,
+        easing: Easing.out(Easing.cubic),
+        toValue: 1.0,
+      }).start();
+    } else if (!nextProps.question && this.props.question) {
+      // TODO: Implement me!
+      this._fadeValue.setValue(0.0);
+    }
     this._maybeRunPointValueUpdateLoop();
   }
 
@@ -51,41 +69,58 @@ export default class Question extends Component<Props, State> {
   }
 
   render() {
-    const { question, submission } = this.props;
+    const rootStyles = [
+      {
+        opacity: this._fadeValue,
+        transform: [
+          {
+            translateY: this._fadeValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [TRANSITION_OFFSET, 0],
+            }),
+          },
+        ],
+      },
+      styles.root,
+    ];
 
+    return (
+      <Animated.View style={rootStyles}>{this._renderContent()}</Animated.View>
+    );
+  }
+
+  _renderContent() {
+    const { question, submission } = this.props;
     if (!question) {
       return null;
     }
     const { pointValue } = this.state;
-
-    return (
-      <Animated.View style={styles.root}>
-        <View style={styles.questionTimerContainer}>
-          <QuestionTimer
-            pointValue={pointValue}
-            question={question}
-            shouldLock={Boolean(submission)}
-          />
+    return [
+      <View key="FIRST" style={styles.questionTimerContainer}>
+        <QuestionTimer
+          pointValue={pointValue}
+          question={question}
+          shouldLock={Boolean(submission)}
+        />
+      </View>,
+      <View key="SECOND" style={styles.questionContainer}>
+        <Text style={styles.questionText}>{question.query}</Text>
+        <View style={styles.mcOptionsContainer}>
+          {question.options.map((o, i) => (
+            <Option
+              key={i}
+              onPress={() => this._onSelectOption(i)}
+              status={
+                submission && submission.predictionIndex === i
+                  ? 'SELECTED'
+                  : 'UNSELECTED'
+              }
+              text={o}
+            />
+          ))}
         </View>
-        <View style={styles.questionContainer}>
-          <Text style={styles.questionText}>{question.query}</Text>
-          <View style={styles.mcOptionsContainer}>
-            {question.options.map((o, i) => (
-              <Option
-                key={i}
-                onPress={() => this._onSelectOption(i)}
-                status={
-                  submission && submission.predictionIndex === i
-                    ? 'SELECTED'
-                    : 'UNSELECTED'
-                }
-                text={o}
-              />
-            ))}
-          </View>
-        </View>
-      </Animated.View>
-    );
+      </View>,
+    ];
   }
 
   _maybeRunPointValueUpdateLoop = (): void => {
