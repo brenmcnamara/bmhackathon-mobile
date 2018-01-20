@@ -1,7 +1,6 @@
 /* @flow */
 
 import React, { Component } from 'react';
-import RefreshOnInterval from './RefreshOnInterval.react';
 
 import { Image, StyleSheet, Text, View } from 'react-native';
 import { Teams } from '../models/Team';
@@ -43,33 +42,72 @@ export default class GameFooter extends Component<Props> {
               {` ${MidDot} `}
             </Text>
             <View style={{ width: 60 }}>
-              <RefreshOnInterval
-                intervalMillis={1000}
-                render={() => (
-                  <Text style={styles.gameTimerText}>
-                    {this._getFormattedMinutes(game.timer.startAt)}
-                  </Text>
-                )}
-              />
+              <GameTime start={game.timer.startAt} />
             </View>
           </View>
         </View>
       </View>
     );
   }
+}
 
-  _getFormattedMinutes(start: Date) {
+type GameTimeProps = {
+  start: Date,
+};
+
+type GameTimeState = {
+  secondsSinceStart: number,
+};
+
+class GameTime extends Component<GameTimeProps, GameTimeState> {
+  _interval: number | null = null;
+  _timer: number | null = null;
+
+  constructor(props: Props) {
+    super(props);
     const nowMillis = Date.now();
-    const startMillis = start.getTime();
-
-    const minutes = (nowMillis - startMillis) / 1000 / 60;
-    const seconds = (minutes - Math.floor(minutes)) * 60;
-    const minutesFormatted =
-      minutes >= 10 ? Math.floor(minutes) : '0' + Math.floor(minutes);
-    const secondsFormatted =
-      seconds >= 10 ? Math.floor(seconds) : '0' + Math.floor(seconds);
-    return `${minutesFormatted}:${secondsFormatted}`;
+    this.state = {
+      secondsSinceStart: Math.floor(
+        (nowMillis - this.props.start.getTime()) / 1000,
+      ),
+    };
   }
+
+  componentDidMount(): void {
+    const startMillis = this.props.start.getTime();
+    const nowMillis = Date.now();
+    const deltaMillis = nowMillis - startMillis;
+    this._timer = setTimeout(() => {
+      this._updateSeconds();
+      this._interval = setInterval(this._updateSeconds, 1000);
+    }, deltaMillis % 1000);
+  }
+
+  componentWillUnmount(): void {
+    this._interval && clearInterval(this._interval);
+    this._timer && clearTimeout(this._timer);
+  }
+
+  render() {
+    const minutes = Math.floor(this.state.secondsSinceStart / 60);
+    const seconds = this.state.secondsSinceStart % 60;
+    const minutesFormatted = minutes < 10 ? `0${minutes}` : minutes.toString();
+    const secondsFormatted = seconds < 10 ? `0${seconds}` : seconds.toString();
+    return (
+      <Text style={styles.gameTimerText}>
+        {`${minutesFormatted}:${secondsFormatted}`}
+      </Text>
+    );
+  }
+
+  _updateSeconds = (): void => {
+    const startMillis = this.props.start.getTime();
+    const nowMillis = Date.now();
+    const deltaMillis = nowMillis - startMillis;
+    this.setState({
+      secondsSinceStart: Math.floor(deltaMillis / 1000),
+    });
+  };
 }
 
 const styles = StyleSheet.create({

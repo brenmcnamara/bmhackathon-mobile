@@ -30,18 +30,24 @@ Firebase.firestore()
   .collection('Game')
   .where('status', '==', 'IN_PROGRESS')
   .onSnapshot(snapshot => {
-    invariant(
-      snapshot.docs.length <= 1,
-      'Only supports one game at a time for now',
-    );
+    // invariant(
+    //   snapshot.docs.length <= 1,
+    //   'Only supports one game at a time for now',
+    // );
 
-    if (snapshot.docs.length === 0) {
+    const games = snapshot.docs
+      .filter(doc => doc.exists)
+      .map(doc => doc.data());
+    const game = games.find(g => g.id === 'DEMO_GAME');
+
+    if (!game) {
       if (Store.getState().gameState.game !== null) {
         Store.dispatch(removeGame());
       }
       return;
     }
-    const game = snapshot.docs[0].data();
+
+    // const game = snapshot.docs[0].data();
 
     invariant(
       Store.getState().gameState.game === null ||
