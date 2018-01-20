@@ -14,6 +14,7 @@ import { Dimensions, StyleSheet, View } from 'react-native';
 import { upsertSubmission } from '../actions/game';
 
 import type { Game } from '../models/Game';
+import type { ID } from '../models/types';
 import type { Question } from '../models/Question';
 import type { State as ReduxState } from '../store';
 import type { Submission } from '../models/Submission';
@@ -24,6 +25,7 @@ export type Props = {
   activeSubmission: Submission | null,
   inactiveQuestions: Array<Question>,
   game: Game,
+  submissions: { [id: ID]: Submission },
   user: User,
 };
 
@@ -41,7 +43,10 @@ class GameScreen extends Component<Props> {
           />
         </View>
         <View style={styles.questionDotsContainer}>
-          <QuestionDots questions={this.props.inactiveQuestions} />
+          <QuestionDots
+            questions={this.props.inactiveQuestions}
+            submissions={this.props.submissions}
+          />
         </View>
         <View style={styles.gameFooterContainer}>
           <GameFooter game={game} />
@@ -97,14 +102,15 @@ function createSubmission(
 }
 
 function mapReduxStateToProps(state: ReduxState) {
-  const { activeQuestion, activeSubmissionID } = state.gameState;
+  const { activeQuestion, activeSubmissionID, submissions } = state.gameState;
   return {
     activeQuestion: activeQuestion,
     activeSubmission: activeSubmissionID
-      ? state.gameState.submissions[activeSubmissionID]
+      ? submissions[activeSubmissionID]
       : null,
     inactiveQuestions: state.gameState.inactiveQuestions,
     game: nullthrows(state.gameState.game),
+    submissions,
     user: nullthrows(state.authState.loginPayload).user,
   };
 }

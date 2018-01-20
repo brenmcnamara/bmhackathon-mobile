@@ -27,6 +27,7 @@ export default class QuestionDots extends Component<Props> {
           // NOTE: We are assuming that all questions here have already been
           // locked.
           const submission = getSubmissionForQuestion(submissions, question);
+          console.log('question / submission', question, submission);
           const dotType =
             question.isCanceled || question.correctIndex === 'UNKNOWN'
               ? 'UNKNOWN'
