@@ -6,7 +6,7 @@ import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 export type Props = {};
 
-export const BarHeight = 6;
+export const BarHeight = 4;
 export const BarSpacing = 8;
 
 const ColorGood = '#407305';
@@ -47,6 +47,7 @@ const styles = StyleSheet.create({
 
   points: {
     fontSize: 22,
+    fontWeight: '200',
     marginBottom: 8,
     textAlign: 'center',
   },

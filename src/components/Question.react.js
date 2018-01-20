@@ -20,7 +20,7 @@ export default class Question extends Component<Props> {
         <View style={styles.questionTimerContainer}>
           <QuestionTimer />
         </View>
-        <View style={styles.questionCard}>
+        <View style={styles.questionContainer}>
           <Text style={styles.questionText}>
             <Text style={styles.bold}>Robert Lewandowski</Text> is running for
             the goal! What is going to happen?
@@ -48,7 +48,7 @@ class Option extends Component<OptionProps> {
     const optionStyles = [
       status === 'UNSELECTED'
         ? {
-            backgroundColor: '#EFEFEF',
+            backgroundColor: '#FFF',
             borderWidth: 1,
             borderColor: '#D8D8D8',
           }
@@ -77,12 +77,13 @@ const styles = StyleSheet.create({
   },
 
   mcOptionsContainer: {
+    marginHorizontal: 4,
     marginTop: 24,
   },
 
   option: {
     alignItems: 'center',
-    borderRadius: 2,
+    borderRadius: 1,
     height: 40,
     justifyContent: 'center',
     marginBottom: 4,
@@ -92,20 +93,15 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
 
-  questionCard: {
-    backgroundColor: '#fff',
-    borderColor: '#D8D8D8',
-    borderWidth: 1,
-    marginHorizontal: 4,
-    paddingHorizontal: 4,
-    paddingTop: 8,
-  },
+  questionContainer: {},
 
   questionText: {
     textAlign: 'center',
     fontFamily: 'HelveticaNeue',
     fontWeight: '200',
     fontSize: 22,
+    lineHeight: 30,
+    marginHorizontal: 32,
   },
 
   questionTimerContainer: {
