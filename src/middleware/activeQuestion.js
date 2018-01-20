@@ -38,7 +38,6 @@ function watchQuestions(
   questions: Array<Question>,
 ): Subscription {
   let timer = null;
-  let activeQuestion: Question | null = initialActiveQuestion;
 
   function watch() {
     const payload = getActiveQuestionPayload(questions);
@@ -48,15 +47,13 @@ function watchQuestions(
         inactiveQuestions: getInactiveQuestions(questions),
         type: 'UPDATE_ACTIVE_QUESTION',
       });
-      activeQuestion = null;
       return;
     }
 
     const { next: nextQuestion } = payload;
     if (payload.timeUntilActive === 'ALREADY_RUNNING') {
-      activeQuestion = nextQuestion;
       next({
-        activeQuestion: payload.next,
+        activeQuestion: nextQuestion,
         inactiveQuestions: getInactiveQuestions(questions),
         type: 'UPDATE_ACTIVE_QUESTION',
       });
