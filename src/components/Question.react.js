@@ -33,12 +33,16 @@ export default class Question extends Component<Props, State> {
   }
 
   componentDidMount(): void {
-    this._shouldUpdatePointValue = Boolean(this.props.question);
+    this._shouldUpdatePointValue = Boolean(
+      this.props.question && !this.props.submission,
+    );
     this._maybeRunPointValueUpdateLoop();
   }
 
   componentWillReceiveProps(nextProps: Props): void {
-    this._shouldUpdatePointValue = Boolean(nextProps.question);
+    this._shouldUpdatePointValue = Boolean(
+      nextProps.question && !nextProps.submission,
+    );
     this._maybeRunPointValueUpdateLoop();
   }
 
@@ -57,7 +61,11 @@ export default class Question extends Component<Props, State> {
     return (
       <Animated.View style={styles.root}>
         <View style={styles.questionTimerContainer}>
-          <QuestionTimer pointValue={pointValue} question={question} />
+          <QuestionTimer
+            pointValue={pointValue}
+            question={question}
+            shouldLock={Boolean(submission)}
+          />
         </View>
         <View style={styles.questionContainer}>
           <Text style={styles.questionText}>{question.query}</Text>
@@ -65,9 +73,7 @@ export default class Question extends Component<Props, State> {
             {question.options.map((o, i) => (
               <Option
                 key={i}
-                onPress={() =>
-                  this.props.onSelectOption(i, this.state.pointValue)
-                }
+                onPress={() => this._onSelectOption(i)}
                 status={
                   submission && submission.predictionIndex === i
                     ? 'SELECTED'
@@ -95,6 +101,16 @@ export default class Question extends Component<Props, State> {
       }
       this._maybeRunPointValueUpdateLoop();
     });
+  };
+
+  _onSelectOption = (index: number): void => {
+    const { question, submission } = this.props;
+    if (!submission || submission.predictionIndex !== index) {
+      this._shouldUpdatePointValue = false;
+      const pointValue = calculatePointValue(question);
+      this.setState({ pointValue });
+      this.props.onSelectOption(index, this.state.pointValue);
+    }
   };
 }
 

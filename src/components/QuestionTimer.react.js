@@ -2,18 +2,30 @@
 
 import React, { Component } from 'react';
 
-import { Animated, Dimensions, StyleSheet, Text, View } from 'react-native';
+import invariant from 'invariant';
+
+import {
+  Animated,
+  Easing,
+  Dimensions,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 
 export type Props = {
   pointValue: number,
   question: Question,
+  shouldLock: bool,
 };
 
 export const BarHeight = 4;
 export const BarSpacing = 8;
 
+const ColorLock = 'rgba(0, 0, 0, 0.2)';
 const ColorGood = '#407305';
 const ColorCritical = '#D0021B';
+const ColorOutterLock = '#4A90E2';
 
 const { width: ScreenWidth } = Dimensions.get('window');
 // NOTE: Assuming that this component gets the full width of the
@@ -41,26 +53,48 @@ export default class QuestionTimer extends Component<Props> {
 
     Animated.timing(this._fillerWidth, {
       duration: endMillis - nowMillis,
+      easing: Easing.linear,
       toValue: 0,
     }).start();
   }
 
   render() {
     const fillStyles = {
-      backgroundColor: this._fillerWidth.interpolate({
-        inputRange: [0, BarWidth],
-        outputRange: [ColorCritical, ColorGood],
-      }),
+      backgroundColor: this.props.shouldLock
+        ? ColorLock
+        : this._fillerWidth.interpolate({
+            inputRange: [0, BarWidth],
+            outputRange: [ColorCritical, ColorGood],
+          }),
       width: this._fillerWidth,
     };
+
+    const outterFillStyles = {
+      backgroundColor: this.props.shouldLock ? ColorOutterLock : '#B9B7B7',
+      flexDirection: 'row',
+      height: BarHeight,
+      width: this.props.shouldLock
+        ? this._calculateRatio(this.props) * BarWidth
+        : BarWidth,
+    };
+
     return (
       <View style={styles.root}>
         <Text style={styles.points}>{this.props.pointValue}</Text>
         <View style={styles.bar}>
-          <Animated.View style={fillStyles} />
+          <View style={outterFillStyles}>
+            <Animated.View style={fillStyles} />
+          </View>
         </View>
       </View>
     );
+  }
+
+  _calculateRatio(props: Props): number {
+    const startMillis = props.question.askAt.getTime();
+    const endMillis = startMillis + props.question.timeLimit * 1000;
+    const nowMillis = Date.now();
+    return (endMillis - nowMillis) / (endMillis - startMillis);
   }
 }
 
