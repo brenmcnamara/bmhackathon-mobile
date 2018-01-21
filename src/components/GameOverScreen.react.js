@@ -1,7 +1,7 @@
 /* @flow */
 
+import BayernCoinIcon from '../../assets/BayernCoin-100x100.png';
 import GameFooter, { Height as GameFooterHeight } from './GameFooter.react';
-import GoldCoinIcon from '../../assets/GoldCoin-100x100.png';
 import Header from './Header.react';
 import QuestionDots from './QuestionDots.react';
 import React, { Component } from 'react';
@@ -72,6 +72,8 @@ class GameOverScreen extends Component<Props> {
             }),
           },
         ],
+        width: 150,
+        height: 150,
       },
     ];
     const textContainerStyles = [
@@ -103,7 +105,7 @@ class GameOverScreen extends Component<Props> {
           </Animated.View>
           <Animated.Image
             resizeMode="contain"
-            source={GoldCoinIcon}
+            source={BayernCoinIcon}
             style={iconStyles}
           />
         </View>

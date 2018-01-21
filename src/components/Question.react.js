@@ -176,7 +176,7 @@ export default class Question extends Component<Props, State> {
 
   _onSelectOption = (index: number): void => {
     const { question, submission } = this.props;
-    if (!submission || submission.predictionIndex !== index) {
+    if (question && (!submission || submission.predictionIndex !== index)) {
       this._shouldUpdatePointValue = false;
       const pointValue = calculatePointValue(question);
       this.setState({ pointValue });
