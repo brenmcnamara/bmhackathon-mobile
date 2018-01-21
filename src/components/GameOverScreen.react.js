@@ -68,7 +68,7 @@ class GameOverScreen extends Component<Props> {
           {
             translateY: this._transitionValue.interpolate({
               inputRange: [0, 1],
-              outputRange: [this.state.transitionStage === 'IN' ? 30 : 300, 0],
+              outputRange: [this.state.transitionStage === 'IN' ? 15 : 300, 0],
             }),
           },
         ],
