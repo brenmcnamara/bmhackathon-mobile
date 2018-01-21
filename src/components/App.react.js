@@ -15,7 +15,10 @@ import { SafeAreaView, StyleSheet, View } from 'react-native';
 import type { State as ReduxState } from '../store';
 
 export type Props = {
-  screen: 'GAME_SCREEN' | 'NO_GAME_SCREEN' | 'LOGIN_SCREEN',
+  screen: | 'GAME_SCREEN'
+    | 'GAME_OVER_SCREEN'
+    | 'NO_GAME_SCREEN'
+    | 'LOGIN_SCREEN',
 };
 
 class App extends Component<Props> {
@@ -30,6 +33,11 @@ class App extends Component<Props> {
 
       case 'GAME_SCREEN': {
         content = <GameScreen />;
+        break;
+      }
+
+      case 'GAME_OVER_SCREEN': {
+        content = <GameOverScreen />;
         break;
       }
 
@@ -53,13 +61,23 @@ class App extends Component<Props> {
 
 function mapReduxStateToProps(state: ReduxState) {
   return {
-    screen:
-      state.authState.status !== 'LOGGED_IN'
-        ? 'LOADING_SCREEN'
-        : state.gameState.game !== null ? 'GAME_SCREEN' : 'NO_GAME_SCREEN',
+    screen: getScreen(state),
     showLeaderBoard: state.leaderBoard.showLeaderBoard,
   };
 }
+
+function getScreen(state: ReduxState) {
+  const { game } = state.gameState;
+  if (state.authState.status !== 'LOGGED_IN') {
+    return 'LOADING_SCREEN';
+  } else if (game === null) {
+    return 'NO_GAME_SCREEN';
+  }
+  return game.status === 'COMPLETE_AND_PAID'
+    ? 'GAME_OVER_SCREEN'
+    : 'GAME_SCREEN';
+}
+
 export default connect(mapReduxStateToProps)(App);
 
 const styles = StyleSheet.create({

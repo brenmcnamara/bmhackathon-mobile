@@ -36,15 +36,19 @@ export default class GameFooter extends Component<Props> {
             />
           </View>
           <View style={styles.headerSpacer} />
-          <View style={styles.gameTimer}>
-            <Text style={styles.gameTimerText}>
-              {game.timer.type === 'FIRST_HALF' ? 'First Half' : 'Second Half'}
-              {` ${MidDot} `}
-            </Text>
-            <View style={{ width: 60 }}>
-              <GameTime start={game.timer.startAt} />
+          {game.status !== 'COMPLETE_AND_PAID' && (
+            <View style={styles.gameTimer}>
+              <Text style={styles.gameTimerText}>
+                {game.timer.type === 'FIRST_HALF'
+                  ? 'First Half'
+                  : 'Second Half'}
+                {` ${MidDot} `}
+              </Text>
+              <View style={{ width: 60 }}>
+                <GameTime start={game.timer.startAt} />
+              </View>
             </View>
-          </View>
+          )}
         </View>
       </View>
     );
