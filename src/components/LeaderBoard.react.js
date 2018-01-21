@@ -129,6 +129,74 @@ class LeaderBoard extends Component<Props, State> {
           />
           <Text style={styles.listPersonPoints}>6,123</Text>
         </View>
+        <View style={styles.listHeader}>
+          <Text style={styles.listHeaderText}>GLOBAL</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>1.</Text>
+          <Text style={styles.listPersonName}>Andrew B.</Text>
+          <Text style={styles.listPersonPoints}>40,643</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>2.</Text>
+          <Text style={styles.listPersonName}>Lance L.</Text>
+          <Text style={styles.listPersonPoints}>40,442</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>3.</Text>
+          <Text style={styles.listPersonName}>Doug P.</Text>
+          <Text style={styles.listPersonPoints}>39,986</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>4.</Text>
+          <Text style={styles.listPersonName}>Brendan M.</Text>
+          <Text style={styles.listPersonPoints}>39,901</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>4.</Text>
+          <Text style={styles.listPersonName}>Ethan R.</Text>
+          <Text style={styles.listPersonPoints}>39,882</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>5.</Text>
+          <Text style={styles.listPersonName}>Robby C.</Text>
+          <Text style={styles.listPersonPoints}>39,803</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>6.</Text>
+          <Text style={styles.listPersonName}>Sean O.</Text>
+          <Text style={styles.listPersonPoints}>39,743</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>7.</Text>
+          <Text style={styles.listPersonName}>Shawn F.</Text>
+          <Text style={styles.listPersonPoints}>39,222</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>8.</Text>
+          <Text style={styles.listPersonName}>Yuriy K.</Text>
+          <Text style={styles.listPersonPoints}>39,201</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>9.</Text>
+          <Text style={styles.listPersonName}>Andrew B.</Text>
+          <Text style={styles.listPersonPoints}>39,100</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>10.</Text>
+          <Text style={styles.listPersonName}>Francesco G.</Text>
+          <Text style={styles.listPersonPoints}>38,962</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>11.</Text>
+          <Text style={styles.listPersonName}>Arthur D.</Text>
+          <Text style={styles.listPersonPoints}>38,912</Text>
+        </View>
+        <View style={styles.listPerson}>
+          <Text style={styles.listPersonNumber}>12.</Text>
+          <Text style={styles.listPersonName}>Krystoff Z.</Text>
+          <Text style={styles.listPersonPoints}>39,873</Text>
+        </View>
       </View>
     );
   };
@@ -162,13 +230,13 @@ const styles = StyleSheet.create({
 
   listHeader: {
     borderBottomWidth: 1,
-    borderColor: 'white',
-    height: 40,
+    borderColor: '#999',
+    height: 60,
     justifyContent: 'flex-end',
   },
 
   listHeaderText: {
-    color: 'white',
+    color: '#DDD',
     fontSize: 14,
     marginBottom: 4,
     marginLeft: 4,
@@ -190,11 +258,18 @@ const styles = StyleSheet.create({
     width: 30,
   },
 
+  listPersonName: {
+    color: '#DDD',
+    fontSize: 18,
+    marginLeft: 8,
+    width: 120,
+  },
+
   listPersonNumber: {
-    color: 'white',
+    color: '#DDD',
     fontSize: 24,
     fontWeight: '200',
-    width: 20,
+    width: 30,
   },
 
   listPersonPoints: {
