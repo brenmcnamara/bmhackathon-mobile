@@ -165,7 +165,7 @@ export default class Question extends Component<Props, State> {
     }
     requestAnimationFrame(() => {
       const { question } = this.props;
-      if (question) {
+      if (question && this._shouldUpdatePointValue) {
         this.setState({
           pointValue: calculatePointValue(question),
         });

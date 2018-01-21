@@ -36,7 +36,7 @@ export default (store: ReduxStore) => (next: Function) => {
     next(action);
 
     switch (action.type) {
-      case 'UPSERT_SUBMISSION': {
+      case 'UPSERT_ACTIVE_SUBMISSION': {
         // Upload the submission to Firebase.
         genUpsertSubmission(action.submission);
         break;

@@ -21,10 +21,14 @@ export type GameStatus =
   | 'COMPLETE_AND_PENDING'
   | 'COMPELTE_AND_PAID';
 
-export type GameTimer = {|
-  +startAt: Date,
-  +type: 'FIRST_HALF' | 'SECOND_HALF',
-|};
+export type GameTimer =
+  | {|
+      +startAt: Date,
+      +type: 'FIRST_HALF' | 'SECOND_HALF',
+    |}
+  | {|
+      +type: 'HALF_TIME',
+    |};
 
 export function genFetchGame(id: ID): Promise<Game | null> {
   return Promise.resolve().then(() =>

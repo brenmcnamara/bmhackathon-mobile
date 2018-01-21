@@ -38,20 +38,38 @@ export default class GameFooter extends Component<Props> {
           <View style={styles.headerSpacer} />
           {game.status !== 'COMPLETE_AND_PAID' && (
             <View style={styles.gameTimer}>
-              <Text style={styles.gameTimerText}>
-                {game.timer.type === 'FIRST_HALF'
-                  ? 'First Half'
-                  : 'Second Half'}
-                {` ${MidDot} `}
-              </Text>
-              <View style={{ width: 60 }}>
-                <GameTime start={game.timer.startAt} />
-              </View>
+              <Text style={styles.gameTimerText}>{this._getTimerName()}</Text>
+              {this._renderTimer()}
             </View>
           )}
         </View>
       </View>
     );
+  }
+
+  _renderTimer() {
+    const { game } = this.props;
+    if (game.timer.type === 'HALF_TIME') {
+      return null;
+    }
+    return (
+      <View style={{ width: 60 }}>
+        <GameTime start={game.timer.startAt} />
+      </View>
+    );
+  }
+
+  _getTimerName() {
+    switch (this.props.game.timer.type) {
+      case 'FIRST_HALF':
+        return 'First Half ' + MidDot;
+      case 'SECOND_HALF':
+        return 'Second Half ' + MidDot;
+      case 'HALF_TIME':
+        return 'Half Time';
+      default:
+        return '';
+    }
   }
 }
 
